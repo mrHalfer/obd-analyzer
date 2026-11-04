@@ -1,0 +1,36 @@
+<div id="panel-map" class="report-panel">
+  <div class="inline-warning report-msg report-msg-warning">
+    <strong>{{ csp_title }}</strong><br>
+    {{ csp_body }}
+  </div>
+  <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;flex-wrap:wrap;">
+    <label for="map-color-select" style="font-weight:600;color:#0d47a1;">{{ color_select_label }}</label>
+    <select id="map-color-select" style="padding:4px 8px;border-radius:6px;border:1px solid #ccc;font-size:0.95rem;">
+      {% for key, label in color_scheme_options %}
+      <option value="{{ key }}">{{ label }}</option>
+      {% endfor %}
+    </select>
+    <span id="map-legend" style="font-size:0.85rem;color:#555;"></span>
+    <span style="margin-left:auto;display:inline-flex;align-items:center;gap:6px;">
+      <input type="time" id="map-time-input" step="1" style="padding:3px 6px;border-radius:6px;border:1px solid #ccc;font-size:0.9rem;transition:border-color 0.3s;" title="Найти отрезок по времени (ЧЧ:ММ:СС)">
+      <button id="map-time-go" style="padding:3px 10px;border-radius:6px;border:1px solid #90a4ae;background:#e3f2fd;cursor:pointer;font-size:0.95rem;line-height:1.2;" title="Перейти к отрезку">&#x2192;</button>
+      <span id="map-bw-toggle" title="Цветная / ч-б подложка" style="cursor:pointer;font-size:1.3rem;user-select:none;line-height:1;margin-left:10px;">&#x25C9;</span>
+    </span>
+  </div>
+  <div id="obd-map" style="width:100%;height:700px;border-radius:8px;background:#e0e0e0;"></div>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <script>
+  window._OBD_MAP_DATA = {
+    colorSchemes: {{ color_schemes_json }},
+    popupFields:  {{ popup_fields_json }},
+    geojsonData:  {{ geojson_json }},
+    bboxCoords:   {{ bbox_json }},
+    routeStart:   {{ route_start_json }},
+    routeEnd:     {{ route_end_json }},
+    dtcIncrease:  {{ dtc_increase_json }}
+  };
+  {{ map_js }}
+  </script>
+</div>

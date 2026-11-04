@@ -1,0 +1,15 @@
+.git
+.pytest_cache
+__pycache__
+**/__pycache__
+*.pyc
+*.pyo
+*.log
+*.pdf
+*.xlsx
+*_metrics.csv
+*_profile.csv
+*_knock.csv
+*_misfire.csv
+*_joker.csv
+comparison_report.*

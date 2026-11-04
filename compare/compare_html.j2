@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ page_title }}</title>
+{% if plotly_cdn %}{{ plotly_cdn | safe }}{% endif %}
+<style>{{ css }}</style>
+</head>
+<body>
+<div class="compare-report">
+  <div class="page-header">
+    <div class="page-header-left">
+      <h1>{{ page_title }}</h1>
+      <p class="report-meta">{{ meta }}</p>
+    </div>
+    {% if logo_svg %}<div class="brand-header">{{ logo_svg | safe }}</div>{% endif %}
+  </div>
+  {% if inline_warning %}{{ inline_warning | safe }}{% endif %}
+
+  {% for tab_id, panel_id, label, visible in tab_defs %}
+  <input class="tab-input" type="radio" id="{{ tab_id }}" name="ctabs"{{ ' checked' if loop.first else '' }}>
+  {% endfor %}
+
+  <div class="tabs">
+    {% for tab_id, panel_id, label, visible in tab_defs %}
+    <label class="tab-label" for="{{ tab_id }}">{{ label }}</label>
+    {% endfor %}
+  </div>
+
+  <div class="tabs-content">
+    {% for tab_id, panel_id, label, visible in tab_defs %}
+    <div class="tab-panel" id="{{ panel_id }}">{{ panels_html.get(panel_id, '') | safe }}</div>
+    {% endfor %}
+  </div>
+</div>
+<script>{{ js }}</script>
+</body>
+</html>

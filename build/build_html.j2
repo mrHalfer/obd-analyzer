@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="{{ lang }}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ t('html.title') }}: {{ base }}</title>
+<style>{{ css }}</style>
+</head>
+<body>
+<div class="report">
+  <div class="page-header">
+    <div class="page-header-left">
+      <h1>{{ t('html.title') }}</h1>
+      <p class="report-meta">{{ t('html.file_label') }}: {{ base }}.csv · {{ t('html.generated_label') }}: {{ generated_at }}</p>
+    </div>
+    {% if logo_svg %}<div class="brand-header">{{ logo_svg | safe }}</div>{% endif %}
+  </div>
+
+  <input type="radio" id="tab-summary"   name="report-tab" class="report-tab-input" checked>
+  <input type="radio" id="tab-reports"   name="report-tab" class="report-tab-input">
+  <input type="radio" id="tab-dashboard" name="report-tab" class="report-tab-input">
+  <input type="radio" id="tab-matrices"  name="report-tab" class="report-tab-input">
+  {% if show_timeline_tab %}
+  <input type="radio" id="tab-timeline"  name="report-tab" class="report-tab-input">
+  {% endif %}
+  {% if show_map_tab %}
+  <input type="radio" id="tab-map"       name="report-tab" class="report-tab-input">
+  {% endif %}
+  <input type="radio" id="tab-analytics" name="report-tab" class="report-tab-input">
+  <input type="radio" id="tab-3d"        name="report-tab" class="report-tab-input">
+
+  <div class="report-tabs" role="tablist">
+    <label for="tab-summary"   class="report-tab-label" role="tab">{{ t('html.tabs.summary') }}</label>
+    <label for="tab-reports"   class="report-tab-label" role="tab">{{ t('html.tabs.reports') }}</label>
+    <label for="tab-dashboard" class="report-tab-label" role="tab">{{ t('html.tabs.dashboard') }}</label>
+    <label for="tab-matrices"  class="report-tab-label" role="tab">{{ t('html.tabs.matrices') }}</label>
+    {% if show_timeline_tab %}
+    <label for="tab-timeline"  class="report-tab-label" role="tab">{{ t('html.tabs.timeline') }}</label>
+    {% endif %}
+    <label for="tab-analytics" class="report-tab-label" role="tab">{{ t('html.tabs.analytics') }}</label>
+    <label for="tab-3d"        class="report-tab-label" role="tab">{{ t('html.tabs.3d') }}</label>
+    {% if show_map_tab %}
+    <label for="tab-map"       class="report-tab-label" role="tab">{{ t('html.tabs.map') }}</label>
+    {% endif %}
+  </div>
+
+  <div class="report-tabs-content">
+    {{ summary_panel | safe }}
+    {{ reports_panel | safe }}
+    {{ chart_panels | safe }}
+    {% if show_map_tab %}
+    {{ map_panel | safe }}
+    {% endif %}
+  </div>
+</div>
+<script>var _OBD_TRIP_START_SEC = {{ trip_start_sec }};</script>
+<script>{{ js }}</script>
+</body>
+</html>
