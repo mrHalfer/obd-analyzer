@@ -1,264 +1,265 @@
 # OBD-II Analyzer
 
-[English](README.md) · **Русский**
+**English** · [Русский](README.ru.md)
 
-Анализатор данных бортовой диагностики (OBD-II). Предназначен для работы с файлами диагностики, экспортированными из программы CarScaner в формате CSV #2.
+On-board diagnostics (OBD-II) data analyzer. Designed for diagnostic files exported from the CarScaner app in CSV #2 format.
 
-Читает CSV-логи, вычисляет метрики по режимам работы двигателя и генерирует отчёты в форматах CSV, PNG, HTML (Plotly) и PDF. При обработке нескольких логов автоматически строит сравнительный отчёт.
+Reads CSV logs, calculates metrics by engine operating mode, and generates reports in CSV, PNG, HTML (Plotly), and PDF formats. When processing multiple logs, automatically builds a cross-trip comparison report.
 
-## Графический интерфейс
+## Graphical Interface
 
-GUI запускается без указания пути до CSV: `python analyze_obd.py` (или напрямую `python gui.py`).
+The GUI starts when no CSV path is given: `python analyze_obd.py` (or directly `python gui.py`).
 
-Элементы окна:
+Window elements:
 
-- **Папка с CSV-логами** — откуда читать сырые логи
-- **Папка отчётов** — куда складывать результаты (пусто = рядом с исходными CSV)
-- **Форматы отчётов** — чекбоксы CSV / PNG / HTML / PDF / GeoJSON / XLS (в сводной)
-- **Переформировать все отчёты** — полный прогон по всем исходным CSV
-- **Сформировать новые отчёты** — пропускать CSV, для которых в папке отчётов уже есть `*_metrics.csv`
-- **Сформировать сводную** — сравнительный отчёт по `*_metrics.csv` в папке отчётов
+- **CSV log folder** — where raw logs are read from
+- **Report folder** — where results are written (empty = next to the source CSVs)
+- **Report formats** — checkboxes CSV / PNG / HTML / PDF / GeoJSON / XLS (comparison)
+- **Rebuild all reports** — full run over every source CSV
+- **Generate new reports** — skips CSVs that already have `*_metrics.csv` in the report folder
+- **Generate comparison** — comparison report from the `*_metrics.csv` files in the report folder
 
-В GUI недостающие пакеты предлагаются к установке (с точной pip-командой) и
-ставятся только после согласия пользователя. В CLI (запуск с путём) автоустановки
-нет — печатается команда установки; формат отчёта с отсутствующим пакетом
-пропускается с сообщением, остальные форматы формируются как обычно.
+In the GUI, missing packages are offered for installation (with the exact pip
+command) and installed only after the user consents. In CLI mode (with a path)
+there is no auto-install — the install command is printed instead; a report
+format whose package is missing is skipped with a message while all other
+formats are still generated.
 
-## Генерируемые файлы
+## Generated Files
 
-Для каждого входного `{name}.csv`:
+For each input `{name}.csv`:
 
 **CSV:**
-- `{name}_metrics.csv` — сводные метрики по режимам
-- `{name}_joker.csv` — события заглохов двигателя
-- `{name}_profile.csv` — профиль скорости (параметры по бинам 5 км/ч)
-- `{name}_knock_groups.csv` — группы детонации
-- `{name}_knock_timeline.csv` — хронология детонации
-- `{name}_misfire_timeline.csv` — хронология пропусков зажигания
+- `{name}_metrics.csv` — summary metrics by operating mode
+- `{name}_joker.csv` — engine stall events
+- `{name}_profile.csv` — speed profile (parameters in 5 km/h bins)
+- `{name}_knock_groups.csv` — knock groups
+- `{name}_knock_timeline.csv` — knock chronology
+- `{name}_misfire_timeline.csv` — misfire chronology
 
-**PNG (11 графиков):**
-- Таймлайн RPM/Speed/Temp, heatmap детонации, гистограммы LTFT/STFT
-- Матрица корреляций, коррекции топлива, кислородные датчики
-- Температурные профили, нагрузка двигателя, анализ MAF
-- Пропуски зажигания, сводный дашборд
+**PNG (11 charts):**
+- RPM/Speed/Temp timeline, knock heatmap, LTFT/STFT histograms
+- Correlation matrix, fuel trims, oxygen sensors
+- Temperature profiles, engine load, MAF analysis
+- Misfires, summary dashboard
 
-**HTML:** 
-- `{name}_report.html` — единый интерактивный отчёт с табами
-- `{name}_X.html` — отдельные страницы с каждым графиком
+**HTML:**
+- `{name}_report.html` — unified interactive report with tabs
+- `{name}_X.html` — individual pages for each chart
 
-**PDF:** `{name}_report.pdf` — отчёт с метриками и PNG-иллюстрациями
+**PDF:** `{name}_report.pdf` — report with metrics and PNG illustrations
 
-**GEOJSON:** `{name}.geojson` — геокодированный отчёт: отрезки маршрута с min/max/mean значениями + точки событий: заглохов (event_type: stall, красный кружок) и увеличения счётчика ошибок DTC (event_type: dtc_increase, оранжевый кружок)
+**GEOJSON:** `{name}.geojson` — geocoded report: route segments with min/max/mean values + event points: stalls (event_type: stall, red circle) and DTC fault count increases (event_type: dtc_increase, orange circle)
 
-**Сравнительный отчёт** (при обработке директории с двумя и более логами):
-- `comparison_report.csv` — сводная таблица: строки = поездки, столбцы = ключевые метрики + режимы + статусы; формируется всегда
-- `comparison_profiles.csv` — профили скорости: строки = скоростной бин + метрика, столбцы = поездки; формируется если есть `*_profile.csv`
-- `comparison_report.html` — интерактивный HTML с вкладками: сводная таблица, тренды, детонация, режимы, heatmap статусов, профили скорости, тренды профилей
-- `comparison_report.pdf` — PDF со сводной таблицей и графиками
-- `comparison_report.xlsx` — Excel со сводной таблицей и листами: Тренды, Детонация, Режимы, Статусы
-- `comparison_trends.png` — тренды ключевых параметров по поездкам (LTFT/STFT, T ОЖ, T впуска, RPM, нагрузка, скорость, впрыск, O2)
-- `comparison_knock.png` — сравнение детонации по силе
-- `comparison_modes.png` — распределение времени по режимам езды
-- `comparison_heatmap.png` — heatmap статусов ключевых метрик
+**Comparison report** (generated automatically when processing a directory with two or more logs):
+- `comparison_report.csv` — summary table: rows = trips, columns = key metrics + modes + statuses; always generated
+- `comparison_profiles.csv` — speed profiles: rows = speed bin + metric, columns = trips; generated when `*_profile.csv` files are present
+- `comparison_report.html` — interactive HTML with tabs: summary table, trends, knock, modes, status heatmap, speed profiles, profile trends
+- `comparison_report.pdf` — PDF with summary table and charts
+- `comparison_report.xlsx` — Excel with summary table and sheets: Trends, Knock, Modes, Statuses
+- `comparison_trends.png` — key parameter trends across trips (LTFT/STFT, coolant T, intake T, RPM, load, speed, injection, O2)
+- `comparison_knock.png` — knock comparison by severity
+- `comparison_modes.png` — driving mode time distribution across trips
+- `comparison_heatmap.png` — key metric status heatmap across trips
 
-## Режимы работы двигателя
+## Engine Operating Modes
 
-| Режим | Описание |
+| Mode | Description |
 |---|---|
-| `PRE_START` | Зажигание включено, двигатель не запущен (RPM = 0) |
-| `WARMUP` | Прогрев (от запуска до начала движения) |
-| `DRIVE_CITY` | Городской режим (0–60 км/ч) |
-| `DRIVE_SUBURBAN` | Загородный режим (61–110 км/ч) |
-| `DRIVE_HIGHWAY` | Трасса (110+ км/ч) |
+| `PRE_START` | Ignition on, engine not running (RPM = 0) |
+| `WARMUP` | Warm-up (from engine start until movement begins) |
+| `DRIVE_CITY` | City driving (0–60 km/h) |
+| `DRIVE_SUBURBAN` | Suburban driving (61–110 km/h) |
+| `DRIVE_HIGHWAY` | Highway driving (110+ km/h) |
 
-## Статусы метрик
+## Metric Statuses
 
-- ✅ **OK** — значение в норме
-- ⚠️ **WARNING** — требует внимания
-- ❌ **ERROR** — критическое отклонение
-- ○ **NEUTRAL** — информационный параметр
+- ✅ **OK** — value within normal range
+- ⚠️ **WARNING** — requires attention
+- ❌ **ERROR** — critical deviation
+- ○ **NEUTRAL** — informational parameter
 
-## Запуск в терминале
+## Running in the Terminal
 
 ```bash
-# Один файл
+# Single file
 python analyze_obd.py log_2026-01-27.csv
 
-# С параметрами (бензин АИ-95, температура на улице -5)
-python analyze_obd.py log_2026-01-27.csv -fuel АИ-95 -temp -5
+# With parameters (95 octane gasoline, ambient temperature -5°C)
+python analyze_obd.py log_2026-01-27.csv -fuel 95 -temp -5
 
-# Все CSV в директории
+# All CSV files in a directory
 python analyze_obd.py ./logs
 
-# Текущая директория
+# Current directory
 python analyze_obd.py .
 
-# Выборочная генерация отчётов (без csv таблицы и без pdf отчета)
+# Selective report generation (no CSV tables, no PDF report)
 python analyze_obd.py log.csv -nocsv -nopdf
 python analyze_obd.py log.csv -nopng -nohtml
 ```
 
-## Параметры командной строки
+## Command-Line Parameters
 
-| Параметр | Описание | По умолчанию |
+| Parameter | Description | Default |
 |---|---|---|
-| `path` | Путь к CSV файлу или директории с логами | если не указан — GUI |
-| `-fuel` | Тип топлива (АИ-92, АИ-95, АИ-98) | АИ-95 |
-| `-temp` | Температура окружающей среды (°C) | автоопределение |
-| `-lang` | Указать язык для отчетов | ru |
-| `-nocsv` | Не создавать дополнительные CSV файлы | False |
-| `-nopng` | Не создавать PNG графики | False |
-| `-noplot` | Не создавать PLOT графики | False |
-| `-nohtml` | Не создавать HTML отчёт | False |
-| `-nopdf` | Не создавать PDF отчёт | False |
-| `-nogeojson` | Не создавать геокодированный отчёт | False |
-| `-nomap` | Не создавать вкладку с интерактивной картой в html отчёте | False |
-| `-nocompare` | Не создавать сравнительный отчёт по поездкам (только при обработке директории) | False |
-| `-noxls` | Не создавать Excel-отчёт сравнения поездок | False |
-| `-continue` | Пропускать файлы с уже существующим `_metrics.csv`; не пересоздавать готовые PDF/HTML | False |
+| `path` | Path to a CSV file or directory containing logs | GUI if omitted |
+| `-fuel` | Fuel type (92, 95, 98 octane) | 95 |
+| `-temp` | Ambient temperature (°C) | auto-detect |
+| `-lang` | Report language | ru |
+| `-nocsv` | Do not generate additional CSV files | False |
+| `-nopng` | Do not generate PNG charts | False |
+| `-noplot` | Do not generate PLOT charts | False |
+| `-nohtml` | Do not generate HTML report | False |
+| `-nopdf` | Do not generate PDF report | False |
+| `-nogeojson` | Do not generate geocoded report | False |
+| `-nomap` | Do not add interactive map tab to HTML report | False |
+| `-nocompare` | Do not generate comparison report (directory mode only) | False |
+| `-noxls` | Do not generate Excel comparison report | False |
+| `-continue` | Skip files that already have `_metrics.csv`; do not regenerate existing PDF/HTML | False |
 
-## Матрица поведения флагов
+## Flag Behavior Matrix
 
-| Команда | CSV | PNG | HTML | PDF |
+| Command | CSV | PNG | HTML | PDF |
 |---|---|---|---|---|
-| ./ | metrics + доп. | встроены в HTML+PDF, удалены | единый с плотами | с графиками |
-| ./ -nopng | metrics + доп. | нет | единый с плотами | без графиков |
-| ./ -noplot | metrics + доп. | встроены в HTML+PDF, удалены | единый с PNG | с графиками |
-| ./ -nohtml | metrics + доп. | встроены в PDF, сохранены | отдельные HTML x3 | с графиками |
-| ./ -nopdf | metrics + доп. | встроены в HTML, сохранены | единый с плотами | нет |
-| ./ -nopng -noplot | metrics + доп. | нет | единый (только таблицы) | без графиков |
-| ./ -nopng -nohtml | metrics + доп. | нет | отдельные HTML x3 | без графиков |
-| ./ -nopng -noplot -nohtml | metrics + доп. | нет | нет | без графиков |
-| ./ -nocsv | только metrics | встроены в HTML+PDF, удалены | единый с плотами | с графиками |
+| ./ | metrics + extra | embedded in HTML+PDF, deleted | unified with plots | with charts |
+| ./ -nopng | metrics + extra | none | unified with plots | without charts |
+| ./ -noplot | metrics + extra | embedded in HTML+PDF, deleted | unified with PNG | with charts |
+| ./ -nohtml | metrics + extra | embedded in PDF, saved | separate HTML x3 | with charts |
+| ./ -nopdf | metrics + extra | embedded in HTML, saved | unified with plots | none |
+| ./ -nopng -noplot | metrics + extra | none | unified (tables only) | without charts |
+| ./ -nopng -nohtml | metrics + extra | none | separate HTML x3 | without charts |
+| ./ -nopng -noplot -nohtml | metrics + extra | none | none | without charts |
+| ./ -nocsv | metrics only | embedded in HTML+PDF, deleted | unified with plots | with charts |
 
-## Запуск в Docker
+## Running with Docker
 
 ```bash
-# Сборка образа (из корня проекта)
+# Build the image (from the project root)
 docker build -f docker/Dockerfile -t obd-analyzer .
-# или запустить скрипт:  docker\build.bat  (Windows) /  bash docker/build.sh  (Linux/macOS)
+# or use the script:  docker\build.bat  (Windows) /  bash docker/build.sh  (Linux/macOS)
 
-# Анализ одного файла (данные монтируются через volume)
-docker run --rm -v "C:\logs:/data" obd-analyzer /data/log.csv -lang ru
+# Analyse a single file (data is mounted via a volume)
+docker run --rm -v "/path/to/logs:/data" obd-analyzer /data/log.csv -lang en
 
-# Анализ директории
-docker run --rm -v "C:\logs:/data" obd-analyzer /data -lang en
+# Analyse a directory
+docker run --rm -v "/path/to/logs:/data" obd-analyzer /data -lang en
 
-# С флагами
-docker run --rm -v "C:\logs:/data" obd-analyzer /data -nopdf -noxls -lang ru
+# With flags
+docker run --rm -v "/path/to/logs:/data" obd-analyzer /data -nopdf -noxls -lang en
 ```
 
-Результаты сохраняются рядом с исходными CSV внутри смонтированного volume.
+Results are written alongside the source CSV files inside the mounted volume.
 
-## Структура проекта
+## Project Structure
 
 ```
 analyze_obd/
-├── analyze_obd.py           Оркестратор: загрузка CSV, метрики, запуск отчётов
-├── analyze_obd.json         Маппинг колонок исходного CSV
-├── core_obd.py              Ядро: константы, утилиты, функции статусов
-├── core_obd.json            Ядро: пороговые значения констант
-├── gui.py                   Графический интерфейс (tkinter, запуск без аргументов)
-├── deps.py                  Зависимости: проверка и установка по согласию (для GUI)
-├── translation.py           Модуль локализации (t(), set_language())
+├── analyze_obd.py           Orchestrator: CSV loading, metrics, report generation
+├── analyze_obd.json         Column mapping for the source CSV
+├── core_obd.py              Core: constants, utilities, status functions
+├── core_obd.json            Core: threshold values for constants
+├── gui.py                   Graphical user interface (tkinter, launched with no arguments)
+├── deps.py                  Dependency checker and consent-based installer (for the GUI)
+├── translation.py           Localisation module (t(), set_language())
 │
-├── lang/                    Файлы переводов
-│   ├── ru.json                  Перевод: русский
-│   ├── en.json                  Перевод: английский
-│   └── de.json                  Перевод: немецкий
+├── lang/                    Translation files
+│   ├── ru.json                  Russian translations
+│   ├── en.json                  English translations
+│   └── de.json                  German translations
 │
-├── build/                Генераторы отчётов и визуализаций
-│   ├── build_csv.py             CSV-отчёты: джокер-события, профиль скорости, группы детонации
-│   ├── build_png.py             PNG-графики: таймлайн, heatmap, гистограммы, корреляции, дашборд
-│   ├── build_html.py            HTML-отчёт: интерактивные графики Plotly, таблицы, табы
-│   ├── build_html.j2            HTML-отчёт: Jinja2-шаблон страницы
-│   ├── build_html.js            HTML-отчёт: JS-логика для встраивания
-│   ├── build_html.css           HTML-отчёт: стили
-│   ├── build_plotly.py          Plotly-графики: таймлайн, heatmap, гистограммы, 3D
-│   ├── build_plotly.js          Plotly-графики: JS-обёртка для встраивания
-│   ├── build_pdf.py             PDF-отчёт: метрики, карточки, таблицы, PNG-иллюстрации
-│   ├── build_map.py             Интерактивная карта: маршрут и параметры в HTML
-│   ├── build_map.j2             Карта: Jinja2-шаблон панели карты
-│   ├── build_map.js             Карта: JS-логика для встраивания
-│   └── build_geojson.py         GeoJSON: сегменты маршрута с min/max/mean значениями
+├── build/                Report and visualisation generators
+│   ├── build_csv.py             CSV reports: joker events, speed profile, knock groups
+│   ├── build_png.py             PNG charts: timeline, heatmap, histograms, correlations, dashboard
+│   ├── build_html.py            HTML report: interactive Plotly charts, tables, tabs
+│   ├── build_html.j2            HTML report: Jinja2 page template
+│   ├── build_html.js            HTML report: JS logic for embedding
+│   ├── build_html.css           HTML report: styles
+│   ├── build_plotly.py          Plotly charts: timeline, heatmap, histograms, 3D
+│   ├── build_plotly.js          Plotly charts: JS wrapper for embedding
+│   ├── build_pdf.py             PDF report: metrics, cards, tables, PNG illustrations
+│   ├── build_map.py             Interactive map: route and parameters in HTML
+│   ├── build_map.j2             Map: Jinja2 panel template
+│   ├── build_map.js             Map: JS logic for embedding
+│   └── build_geojson.py         GeoJSON: route segments with min/max/mean values
 │
-├── plugins/                 Аналитические плагины
-│   ├── check_catalyst.py        Анализ катализатора и качества топлива
-│   ├── check_coolant.py         Анализ прогрева, термостата и вентилятора
-│   └── check_knock.py           Анализ детонации и пропусков зажигания
+├── plugins/                 Analytical plugins
+│   ├── check_catalyst.py        Catalyst and fuel quality analysis
+│   ├── check_coolant.py         Warm-up, thermostat and fan analysis
+│   └── check_knock.py           Knock and misfire analysis
 │
-├── compare/                 Сравнение нескольких поездок
-│   ├── compare_core.py          Загрузка *_metrics.csv, сводные DataFrame
-│   ├── compare_png.py           PNG-графики: тренды, детонация, режимы, heatmap статусов
-│   ├── compare_plotly.py        Plotly-графики для HTML-отчёта сравнения (интерактивные)
-│   ├── compare_html.py          HTML-отчёт сравнения с вкладками
-│   ├── compare_html.j2          HTML-отчёт сравнения: Jinja2-шаблон страницы
-│   ├── compare_html.css         Стили HTML-отчёта сравнения
-│   ├── compare_html.js          JS-логика HTML-отчёта сравнения
-│   ├── compare_profiles.py      Профили скорости: загрузка *_profile.csv, HTML-вкладки, CSV-экспорт
-│   ├── compare_pdf.py           PDF-отчёт сравнения
-│   ├── compare_xls.py           Excel-отчёт сравнения (.xlsx)
-│   └── compare_csv.py           CSV-отчёт сравнения (всегда)
+├── compare/                 Multi-trip comparison
+│   ├── compare_core.py          Load *_metrics.csv files, build summary DataFrames
+│   ├── compare_png.py           PNG charts: trends, knock, modes, status heatmap
+│   ├── compare_plotly.py        Interactive Plotly charts for the HTML comparison report
+│   ├── compare_html.py          HTML comparison report with tabs
+│   ├── compare_html.j2          HTML comparison report: Jinja2 page template
+│   ├── compare_html.css         Styles for the comparison HTML report
+│   ├── compare_html.js          JS logic for the comparison HTML report
+│   ├── compare_profiles.py      Speed profiles: load *_profile.csv, HTML tabs, CSV export
+│   ├── compare_pdf.py           PDF comparison report
+│   ├── compare_xls.py           Excel comparison report (.xlsx)
+│   └── compare_csv.py           CSV comparison report (always generated)
 │
-├── tests/                   Юнит-тесты
-│   ├── test_column_mapping.py   Тесты маппинга колонок и find_column
-│   ├── test_knock_grouping.py   Тесты группировки и классификации детонации
-│   ├── test_statuses.py         Тесты расчёта статусов параметров (параметризованные)
-│   ├── test_compare_core.py     Тесты модуля сравнения поездок (compare_core)
-│   ├── test_core_obd_json.py    Тесты конфига core_obd.json: ключи, типы, инварианты min < max
-│   ├── test_render.py           Тесты модулей генерации: build_html, build_png, build_csv
-│   ├── test_compare_reports.py  Тесты compare_plotly, compare_pdf и HTML-валидности
-│   └── README.md                Инструкция по запуску тестов
+├── tests/                   Unit tests
+│   ├── test_column_mapping.py   Column mapping and find_column tests
+│   ├── test_knock_grouping.py   Knock grouping and classification tests
+│   ├── test_statuses.py         Parameter status tests (parametrized)
+│   ├── test_compare_core.py     Multi-trip comparison module tests (compare_core)
+│   ├── test_core_obd_json.py    core_obd.json validation: keys, types, min < max invariants
+│   ├── test_render.py           Report generation tests: build_html, build_png, build_csv
+│   ├── test_compare_reports.py  Comparison report tests: compare_plotly, compare_pdf, HTML validity
+│   └── README.md                Test execution instructions
 │
-├── docker/                  Docker — сборка и запуск
-│   ├── Dockerfile               Образ Python 3.12-slim, непривилегированный пользователь obd
-│   ├── requirements.txt         Зависимости Python для Docker-образа
-│   ├── build.sh                 Скрипт сборки (Linux/macOS)
-│   └── build.bat                Скрипт сборки (Windows)
+├── docker/                  Docker build files
+│   ├── Dockerfile               Image: Python 3.12-slim, unprivileged obd user
+│   ├── requirements.txt         Python dependencies for the Docker image
+│   ├── build.sh                 Build script (Linux/macOS)
+│   └── build.bat                Build script (Windows)
 │
-├── setup.cfg                Конфиг isort / flake8 / mypy
-└── .pre-commit-config.yaml  Pre-commit хуки: black, isort, flake8, mypy
+├── setup.cfg                isort / flake8 / mypy configuration
+└── .pre-commit-config.yaml  Pre-commit hooks: black, isort, flake8, mypy
 ```
 
-## Зависимости
+## Dependencies
 
 ### Runtime (`docker/requirements.txt`)
 
-| Пакет | Версия | Назначение |
+| Package | Version | Purpose |
 |---|---|---|
-| `pandas` | >=2.0 | Обработка CSV и DataFrame |
-| `numpy` | >=1.24 | Числовые вычисления |
-| `matplotlib` | >=3.7 | PNG-графики |
-| `Pillow` | >=10.0 | Обработка изображений (используется matplotlib) |
-| `requests` | >=2.28 | Автоопределение температуры через Open-Meteo API |
-| `jinja2` | >=3.1 | HTML-шаблоны (`build_html.j2`, `compare_html.j2`) |
-| `plotly` | >=5.18 | **Опционально** — интерактивные Plotly-графики в HTML |
-| `reportlab` | >=4.0 | **Опционально** — PDF-отчёт |
-| `openpyxl` | >=3.1 | **Опционально** — Excel-отчёт сравнения (.xlsx) |
+| `pandas` | >=2.0 | CSV loading and DataFrame processing |
+| `numpy` | >=1.24 | Numerical computations |
+| `matplotlib` | >=3.7 | PNG charts |
+| `Pillow` | >=10.0 | Image handling (used by matplotlib) |
+| `requests` | >=2.28 | Automatic ambient temperature via Open-Meteo API |
+| `jinja2` | >=3.1 | HTML templates (`build_html.j2`, `compare_html.j2`) |
+| `plotly` | >=5.18 | **Optional** — interactive Plotly charts in HTML reports |
+| `reportlab` | >=4.0 | **Optional** — PDF report |
+| `openpyxl` | >=3.1 | **Optional** — Excel comparison report (.xlsx) |
 
 ```bash
 pip install pandas numpy matplotlib Pillow requests jinja2
-# Опциональные (полный набор отчётов):
+# Optional (full report set):
 pip install plotly reportlab openpyxl
 ```
 
-### Dev-зависимости (только для разработки)
+### Dev dependencies (development only)
 
-| Пакет | Назначение |
+| Package | Purpose |
 |---|---|
-| `pytest` | Запуск юнит-тестов |
-| `pytest-cov` | Отчёт покрытия (опционально) |
-| `pre-commit` | Запуск хуков black / isort / flake8 / mypy перед коммитом |
+| `pytest` | Run unit tests |
+| `pytest-cov` | Coverage report (optional) |
+| `pre-commit` | Run black / isort / flake8 / mypy hooks before commits |
 
 ```bash
 pip install pytest pre-commit
-pre-commit install   # установить git-хуки из .pre-commit-config.yaml
+pre-commit install   # install git hooks from .pre-commit-config.yaml
 ```
 
-## История версий
+## Changelog
 
-Полная история изменений — в [CHANGELOG.md](CHANGELOG.md) (русский) и [CHANGELOG_EN.md](CHANGELOG_EN.md) (английский).
+Full change history: [CHANGELOG_EN.md](CHANGELOG_EN.md) (English) and [CHANGELOG.md](CHANGELOG.md) (Russian).
 
-## Лицензия
+## License
 
-MIT — см. [LICENSE](LICENSE).
+MIT — see [LICENSE](LICENSE).
