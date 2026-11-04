@@ -962,5 +962,48 @@
       "title":     "OBD-II Fahrtvergleich",
       "generated": "Erstellt: {date} | Fahrten: {n}"
     }
+  },
+
+"gui": {
+    "title": "OBD-II Analyzer — Lada Granta FL 2022",
+    "in_folder": "CSV-Logordner:",
+    "out_folder": "Berichtsordner:",
+    "browse": "Durchsuchen…",
+    "out_hint": "(leerer Berichtsordner = Ergebnisse werden neben den Quelldateien gespeichert)",
+    "formats": "Berichtsformate",
+    "fmt": {
+      "csv": "CSV (Kennzahlen und Daten)",
+      "png": "PNG (Diagramme)",
+      "html": "HTML (Bericht)",
+      "pdf": "PDF (Bericht)",
+      "geojson": "GeoJSON (Route)",
+      "xls": "XLS (im Vergleich)"
+    },
+    "btn_all": "Alle Berichte neu erstellen",
+    "btn_new": "Neue Berichte erstellen",
+    "btn_cmp": "Vergleich erstellen",
+    "language": "Sprache:",
+    "status_ready": "Fertig",
+    "status_running": "Läuft…",
+    "select_folder": "Ordner auswählen",
+    "packages_title": "Pakete erforderlich",
+    "packages_text": "Fehlende Pakete: {packages}\n\nBefehl: {cmd}\n\nJetzt installieren?",
+    "install_declined": "Installation abgelehnt. Manuell installieren: {cmd}",
+    "installing": "Installiere: {packages}",
+    "install_failed": "Installation fehlgeschlagen (oder Paket nicht importierbar): {packages}",
+    "install_error": "Installation fehlgeschlagen",
+    "install_done": "Installation abgeschlossen.",
+    "folders_title": "Keine Ordner angegeben",
+    "folders_text": "Geben Sie den CSV-Logordner an (oder den Berichtsordner für den Vergleich).",
+    "compare_hint": "Der Vergleich basiert auf *_metrics.csv: wählen Sie den Ordner mit verarbeiteten Berichten.",
+    "no_in_folder": "CSV-Logordner nicht gefunden: {path}",
+    "core_missing": "Kernpakete nicht installiert — Arbeit unmöglich. Befehl: {cmd}",
+    "csv_not_found": "CSV-Quelldateien nicht gefunden: {path}",
+    "csv_found": "Gefundene CSV-Dateien: {count}",
+    "skip_exists": "Übersprungen (Berichte vorhanden): {file}",
+    "processed": "Verarbeitete Dateien: {ok} von {total}",
+    "error_prefix": "Fehler:\n",
+    "close_title": "Task läuft",
+    "close_text": "Ein Task läuft noch. Fenster trotzdem schließen?"
   }
 }

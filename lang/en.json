@@ -962,5 +962,48 @@
       "title":     "OBD-II Trip Comparison",
       "generated": "Generated: {date} | Trips: {n}"
     }
+  },
+
+"gui": {
+    "title": "OBD-II Analyzer — Lada Granta FL 2022",
+    "in_folder": "CSV log folder:",
+    "out_folder": "Report folder:",
+    "browse": "Browse…",
+    "out_hint": "(empty report folder = results are written next to the source CSVs)",
+    "formats": "Report formats",
+    "fmt": {
+      "csv": "CSV (metrics and data)",
+      "png": "PNG (charts)",
+      "html": "HTML (report)",
+      "pdf": "PDF (report)",
+      "geojson": "GeoJSON (route)",
+      "xls": "XLS (in comparison)"
+    },
+    "btn_all": "Rebuild all reports",
+    "btn_new": "Generate new reports",
+    "btn_cmp": "Generate comparison",
+    "language": "Language:",
+    "status_ready": "Ready",
+    "status_running": "Running…",
+    "select_folder": "Select folder",
+    "packages_title": "Packages required",
+    "packages_text": "Missing packages: {packages}\n\nCommand: {cmd}\n\nInstall them now?",
+    "install_declined": "Installation declined. Install manually: {cmd}",
+    "installing": "Installing: {packages}",
+    "install_failed": "Failed to install (or package not importable): {packages}",
+    "install_error": "Installation failed",
+    "install_done": "Installation complete.",
+    "folders_title": "Folders not set",
+    "folders_text": "Specify the CSV log folder (or the report folder for the comparison).",
+    "compare_hint": "Comparison is built from *_metrics.csv: point to the folder with processed reports.",
+    "no_in_folder": "CSV log folder not found: {path}",
+    "core_missing": "Core packages are not installed — cannot proceed. Command: {cmd}",
+    "csv_not_found": "Source CSV logs not found: {path}",
+    "csv_found": "CSV files found: {count}",
+    "skip_exists": "Skip (reports already exist): {file}",
+    "processed": "Files processed: {ok} of {total}",
+    "error_prefix": "Error:\n",
+    "close_title": "Task running",
+    "close_text": "A task is still running. Close the window anyway?"
   }
 }

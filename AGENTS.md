@@ -18,7 +18,7 @@ Python 3.10+ (в Docker — 3.12). Windows-ориентированный, кр�
 |---|---|
 | `analyze_obd.py` | Оркестратор: загрузка CSV, маппинг колонок, метрики, диспетчер отчётов, `_run_compare`, CLI `main()`. Версия — в докстринге (`Версия: X.Y (YYYY-MM-DD)`) |
 | `analyze_obd.json` | Маппинг «целевая колонка → кандидаты имён» из CSV. **`TIME` здесь нет и быть не должно** — время всегда 1-я колонка CSV (см. §4) |
-| `gui.py` | tkinter-GUI (см. §5); `deps.py` — проверка pip-зависимостей и установка по согласию |
+| `gui.py` | tkinter-GUI (см. §5; переключатель языка RU/EN, локальный `gui_config.json` не коммитить); `deps.py` — проверка pip-зависимостей и установка по согласию |
 | `core_obd.py` + `core_obd.json` | Ядро: константы, пороги, статусы, утилиты (`looks_like_time`, `find_gps_columns`, `parse_time_to_seconds...`) |
 | `translation.py` + `lang/{ru,en,de}.json` | Локализация `t('a.b.c', **params)`; поиск: текущий язык → ru-fallback → ключ |
 | `build/` | Генераторы отчётов одного лога: `build_csv/png/html/pdf/plotly/map/geojson` (+ `.j2/.js/.css`) |
@@ -37,7 +37,7 @@ Python 3.10+ (в Docker — 3.12). Windows-ориентированный, кр�
 
 - **Changelog**: новая версия — секция `### X.Y` в BOTH `CHANGELOG.md` (en) и `CHANGELOG.ru.md` (ru) (секции должны совпасть по составу — сейчас 9.5…2.0).
 - **README**: `README.md` (en, основной) и `README.ru.md` (ru) — зеркальные правки, та же структура.
-- **Сообщение в консоль/отчёт** — только через `t('console.…')`/соотв. секцию и добавить ключ в **все три** `lang/*.json` (ru/en/de). Русские литералы вне `t()` допустимы лишь в местах, где перевод недостижим (guard-блок запуска до импорта `translation`, GUI-виджеты).
+- **Сообщение в консоль/отчёт** — только через `t('console.…')`/соотв. секцию и добавить ключ в **все три** `lang/*.json` (ru/en/de). Русские литералы вне `t()` допустимы лишь в местах, где перевод недостижим (guard-блок запуска до импорта `translation`). Строки GUI-виджетов — через `t('gui.…')` (ключи во всех трёх файлах).
 - **Версия**: правится в докстринге `analyze_obd.py` и в обеих changelog-секциях `### X.Y`.
 
 ## 4. Особенности анализа (неочевидное)
@@ -56,6 +56,7 @@ Python 3.10+ (в Docker — 3.12). Windows-ориентированный, кр�
 - Новая опциональная зависимость: добавить в `deps.FORMAT_PACKAGES`, импорт только через `deps.require(...)` (бросает `MissingDependencyError`, наследник `ModuleNotFoundError`), вызовы формат-генераторов обёрнуты в `except (ModuleNotFoundError, MissingDependencyError)` → `_log_format_skipped`.
 - **matplotlib** больше нигде не импортировать на уровне модуля (см. `build_png.py`/`compare_png.py` — эталон).
 - GUI-правила: диалоги и виджеты — ТОЛЬКО из потока окна (через `queue` + `threading.Event`, см. `ObdApp._ask`); работа в фоновом потоке; **после pip-установки перепроверять импорт** и `importlib.reload(analyze_obd)`, чтобы защищённые импорты (`_build_png`) подхватили новинки.
+- Язык GUI: сохраняется в `gui_config.json` рядом с `gui.py` (уже в `.gitignore` — НЕ коммитить); нет конфига → `detect_system_language()` (русский UI → `ru`, иначе `en`). Переключение в окне: `ObdApp._on_language` → `save_language` + `set_language` + `_retranslate()` (перетекстичиваются виджеты, зарегистрированные `_reg`); язык отчётов = язык интерфейса (`ao.set_language(get_language())`). В `GUI_LANGS` только ru/en, новые ключи — в `gui.*` всех трёх `lang/*.json`.
 
 ## 6. Известные ловушки (уже наступали)
 

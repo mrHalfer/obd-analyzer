@@ -18,6 +18,7 @@ Window elements:
 - **Rebuild all reports** — full run over every source CSV
 - **Generate new reports** — skips CSVs that already have `*_metrics.csv` in the report folder
 - **Generate comparison** — comparison report from the `*_metrics.csv` files in the report folder
+- **Language** — Русский/English switcher; the choice is remembered in `gui_config.json` next to the program (git-ignored) and on first start the language is auto-detected from the system
 
 In the GUI, missing packages are offered for installation (with the exact pip
 command) and installed only after the user consents. In CLI mode (with a path)

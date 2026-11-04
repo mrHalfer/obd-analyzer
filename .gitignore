@@ -3,3 +3,6 @@ __pycache__/
 **/__pycache__/
 *.py[cod]
 .pytest_cache/
+
+# Local GUI settings (user's language choice etc.) — never commit
+gui_config.json

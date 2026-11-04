@@ -1,6 +1,11 @@
 # Changelog
 
 
+### 9.6
+- GUI: interface language switch (Русский/English) in the window; the choice is stored in `gui_config.json` next to the program (added to `.gitignore`) and reused on the next start
+- First start auto-detects the language from the system UI locale (Russian → ru, anything else → en); report language follows the interface language
+- All GUI texts moved to `lang/*.json` as `gui.*` keys (ru/en/de)
+
 ### 9.5
 - GUI: running `python analyze_obd.py` with no arguments opens a window (tkinter): input/output folders, format checkboxes, "Rebuild all reports", "Generate new reports" and "Generate comparison" buttons; output goes to the in-window log pane
 - Consent-based dependency auto-install in the GUI (packages are installed via pip and re-verified by import); in CLI the exact install command is printed instead and the affected report format is skipped without aborting the analysis
