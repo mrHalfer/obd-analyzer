@@ -258,7 +258,7 @@ pre-commit install   # install git hooks from .pre-commit-config.yaml
 
 ## Changelog
 
-Full change history: [CHANGELOG_EN.md](CHANGELOG_EN.md) (English) and [CHANGELOG.md](CHANGELOG.md) (Russian).
+Full change history: [CHANGELOG.md](CHANGELOG.md) (English) and [CHANGELOG.ru.md](CHANGELOG.ru.md) (Russian).
 
 ## License
 

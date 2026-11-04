@@ -257,7 +257,7 @@ pre-commit install   # установить git-хуки из .pre-commit-config
 
 ## История версий
 
-Полная история изменений — в [CHANGELOG.md](CHANGELOG.md) (русский) и [CHANGELOG_EN.md](CHANGELOG_EN.md) (английский).
+Полная история изменений — в [CHANGELOG.ru.md](CHANGELOG.ru.md) (русский) и [CHANGELOG.md](CHANGELOG.md) (английский).
 
 ## Лицензия
 

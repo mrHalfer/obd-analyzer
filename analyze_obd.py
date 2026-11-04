@@ -7,7 +7,7 @@
 и генерацию отчётов через модули csv/png/html/pdf.
 
 Версия: 9.5 (2026-11-04)
-История изменений — см. CHANGELOG.md
+История изменений — см. CHANGELOG.ru.md
 """
 
 import argparse

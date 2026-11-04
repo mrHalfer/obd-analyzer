@@ -6,7 +6,7 @@ Python 3.10+ (в Docker — 3.12). Windows-ориентированный, кр�
 
 ## 1. Golden rules
 
-1. **Не делать `git commit`/`push`/`tag` без просьбы** (репозиторий Git ещё не инициализирован — это решение владельца).
+1. **Не делать `git commit`/`push`/`tag` без просьбы.** Репозиторий: `https://github.com/mrHalfer/obd-analyzer`, ветка `main`, локальный git лежит в папке проекта. Владелец коммитит и сам через GitHub Desktop — перед своими git-действиями всегда `git pull`/`git status`, не работать поверх чужих незапушенных коммитов вслепую.
 2. **Никаких личных данных, логов поездок, реальных CSV** в репозиторий. `__pycache__`/`.pytest_cache` — в `.gitignore`; **папка `build/` — ИСХОДНИКИ** (генераторы отчётов), её в `.gitignore` не вносить.
 3. **Не менять лицензию**: MIT, копирайт `Denis Rakhmatullin (mrHalfer)` (файл `LICENSE`).
 4. Тесты — арбитр: после любой правки ядра/генераторов гонять `py -3 -m pytest tests -q` (сейчас 436 тестов, все зелёные). Тесты под сломанный код не подгонять.
@@ -26,8 +26,8 @@ Python 3.10+ (в Docker — 3.12). Windows-ориентированный, кр�
 | `compare/` | Сравнение поездок по `*_metrics.csv` в папке: `compare_core/png/html/pdf/xls/profiles/csv` |
 | `tests/` | pytest, синтетические DataFrame (реальных CSV нет); `py -3 -m pytest tests -q` |
 | `docker/` | Dockerfile (python 3.12-slim) + `requirements.txt` — runtime-зависимости |
-| `README.md` / `README_EN.md` | ru-оригинал / en-зеркало |
-| `CHANGELOG.md` / `CHANGELOG_EN.md` | История версий, см. §3 |
+| `README.md` / `README.ru.md` | en-оригинал (основной) / ru-версия |
+| `CHANGELOG.md` (en) / `CHANGELOG.ru.md` (ru) | История версий, см. §3 |
 
 Поток данных: `CSV → fuzzy-маппинг колонок → метрики по режимам (WARMUP/...) → отчёты (CSV/PNG/HTML/PDF/GeoJSON) → при ≥2 логов сравнение (*_metrics.csv → compare_*)`.
 
@@ -35,8 +35,8 @@ Python 3.10+ (в Docker — 3.12). Windows-ориентированный, кр�
 
 Любое пользовательское изменение требует **парных** правок:
 
-- **Changelog**: новая версия — секция `### X.Y` в BOTH `CHANGELOG.md` и `CHANGELOG_EN.md` (секции должны совпасть по составу — сейчас 9.5…2.0).
-- **README**: `README.md` (ru) и `README_EN.md` (en) — зеркальные правки, та же структура.
+- **Changelog**: новая версия — секция `### X.Y` в BOTH `CHANGELOG.md` (en) и `CHANGELOG.ru.md` (ru) (секции должны совпасть по составу — сейчас 9.5…2.0).
+- **README**: `README.md` (en, основной) и `README.ru.md` (ru) — зеркальные правки, та же структура.
 - **Сообщение в консоль/отчёт** — только через `t('console.…')`/соотв. секцию и добавить ключ в **все три** `lang/*.json` (ru/en/de). Русские литералы вне `t()` допустимы лишь в местах, где перевод недостижим (guard-блок запуска до импорта `translation`, GUI-виджеты).
 - **Версия**: правится в докстринге `analyze_obd.py` и в обеих changelog-секциях `### X.Y`.
 
